@@ -1020,3 +1020,651 @@ footer {
 
 
 }
+
+/* ==========================================
+   TRADEX RESPONSIVE FIXES
+   Mobile, tablet and smaller laptop screens
+   ========================================== */
+
+/* Prevent content from creating horizontal overflow */
+html {
+    width: 100%;
+    overflow-x: clip;
+}
+
+body {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+}
+
+.main,
+.panel,
+.market-banner,
+.strategy-card,
+.metric {
+    min-width: 0;
+}
+
+.main {
+    width: auto;
+}
+
+/* Keep form controls within their containers */
+input,
+select,
+button {
+    max-width: 100%;
+}
+
+button,
+a,
+input,
+select {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Make the chart adapt to its container */
+.chart-box {
+    width: 100%;
+    min-width: 0;
+}
+
+.chart-box canvas {
+    max-width: 100%;
+}
+
+/* Keep long numbers and labels from breaking the layout */
+.metric h3,
+.pnl h3,
+.stats strong,
+.banner-price h2,
+.latest strong {
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   TABLETS AND SMALL LAPTOPS
+   ========================================== */
+
+@media (min-width: 601px) and (max-width: 1100px) {
+
+    .main {
+        padding: 24px 22px;
+    }
+
+    .topbar {
+        gap: 14px;
+    }
+
+    .topbar h2 {
+        font-size: 27px;
+    }
+
+    .market-banner {
+        padding: 25px;
+    }
+
+    .banner-price h2 {
+        font-size: 37px;
+    }
+
+    .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+    }
+
+    .settings {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .settings .field:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .strategy-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+    }
+
+    .strategy-card {
+        padding: 18px;
+    }
+
+    .strategy-header {
+        flex-wrap: wrap;
+    }
+
+    .strategy-header > span {
+        margin-left: 0;
+    }
+
+    .stats {
+        gap: 8px;
+    }
+
+    .stats strong {
+        font-size: 12px;
+    }
+
+    .panel {
+        padding: 21px;
+    }
+}
+
+/* ==========================================
+   MOBILE PHONES
+   ========================================== */
+
+@media (max-width: 600px) {
+
+    /* Sidebar becomes a compact navigation area */
+    .sidebar {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        padding: 13px 14px;
+        display: block;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+        padding: 0 0 13px;
+        gap: 10px;
+    }
+
+    .brand-logo {
+        width: 37px;
+        height: 37px;
+        flex-shrink: 0;
+        font-size: 19px;
+    }
+
+    .brand h1 {
+        font-size: 19px;
+    }
+
+    .brand p {
+        font-size: 10px;
+    }
+
+    .nav-title {
+        display: none;
+    }
+
+    /* Allow navigation links to scroll horizontally */
+    .sidebar .nav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: auto;
+        max-width: 100%;
+        padding: 9px 11px;
+        margin: 0 4px 0 0;
+        gap: 7px;
+        font-size: 12px;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .nav-link span {
+        width: auto;
+        font-size: 15px;
+    }
+
+    .sidebar-status {
+        display: none;
+    }
+
+    /* Remove the desktop sidebar offset */
+    .main {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        padding: 19px 13px;
+    }
+
+    /* Header */
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 13px;
+        margin-bottom: 20px;
+    }
+
+    .topbar h2 {
+        font-size: 25px;
+        line-height: 1.25;
+        letter-spacing: -0.6px;
+    }
+
+    .subtitle {
+        max-width: 100%;
+        font-size: 12px;
+    }
+
+    .ready-badge {
+        max-width: 100%;
+        padding: 8px 11px;
+        white-space: normal;
+        font-size: 10px;
+    }
+
+    /* Market price banner */
+    .market-banner {
+        min-height: 0;
+        padding: 21px 17px;
+        margin-bottom: 16px;
+        gap: 12px;
+        border-radius: 12px;
+    }
+
+    .banner-label {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .banner-price {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .banner-price h2 {
+        font-size: clamp(27px, 8vw, 35px);
+        letter-spacing: -1px;
+    }
+
+    .banner-price span {
+        font-size: 9px;
+    }
+
+    .market-banner > div:first-child > p:last-child {
+        font-size: 11px;
+    }
+
+    .bars {
+        height: 60px;
+        gap: 4px;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .bars i {
+        width: 5px;
+        border-radius: 3px 3px 0 0;
+    }
+
+    /* Market metrics */
+    .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .metric {
+        min-width: 0;
+        padding: 13px 12px;
+        border-radius: 11px;
+    }
+
+    .metric-top {
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .metric-top b {
+        width: 25px;
+        height: 25px;
+        flex-shrink: 0;
+        font-size: 12px;
+    }
+
+    .metric h3 {
+        margin-top: 11px;
+        font-size: clamp(16px, 4.7vw, 21px);
+        letter-spacing: -0.4px;
+    }
+
+    .metric small {
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    /* Panels and section headings */
+    .panel {
+        padding: 16px 13px;
+        margin-bottom: 16px;
+        border-radius: 12px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 17px;
+    }
+
+    .section-header h3 {
+        font-size: 17px;
+    }
+
+    .latest {
+        text-align: left;
+    }
+
+    .latest strong {
+        font-size: 18px;
+    }
+
+    /* Price chart */
+    .chart-box {
+        height: 220px;
+        width: 100%;
+    }
+
+    .chart-footer {
+        flex-wrap: wrap;
+        gap: 9px;
+        font-size: 10px;
+    }
+
+    /* Simulation settings */
+    .settings {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .settings .field:last-child {
+        grid-column: auto;
+    }
+
+    .field label {
+        font-size: 12px;
+    }
+
+    .field input {
+        min-height: 44px;
+        padding: 11px 12px;
+        font-size: 16px;
+    }
+
+    .field small {
+        font-size: 10px;
+    }
+
+    .form-bottom {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    #runButton {
+        width: 100%;
+        min-height: 46px;
+        font-size: 13px;
+    }
+
+    #formStatus,
+    #csvImportStatus {
+        overflow-wrap: anywhere;
+        line-height: 1.5;
+    }
+
+    /* Strategy cards */
+    .strategy-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+
+    .strategy-card {
+        min-width: 0;
+        padding: 17px 14px;
+        border-radius: 12px;
+    }
+
+    .strategy-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .strategy-icon {
+        width: 39px;
+        height: 39px;
+        flex-shrink: 0;
+    }
+
+    .strategy-header > div {
+        min-width: 0;
+    }
+
+    .strategy-header h4 {
+        font-size: 14px;
+    }
+
+    .strategy-header p {
+        font-size: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .strategy-header > span {
+        display: inline-block;
+        margin-left: auto;
+        font-size: 9px;
+    }
+
+    .description {
+        min-height: 0;
+        margin-top: 16px;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .pnl {
+        padding: 15px 0;
+    }
+
+    .pnl h3 {
+        font-size: clamp(23px, 6vw, 29px);
+    }
+
+    .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding-top: 14px;
+    }
+
+    .stats small {
+        font-size: 10px;
+    }
+
+    .stats strong {
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    /* History filters */
+    .history-filters {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 13px;
+        padding: 12px;
+    }
+
+    .filter-group {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-group select {
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    #resetFiltersButton {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    /* History table remains horizontally scrollable */
+    .table-container {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 560px;
+        font-size: 11px;
+    }
+
+    th,
+    td {
+        padding: 12px 11px;
+    }
+
+    .history-bottom {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .history-bottom p {
+        line-height: 1.5;
+    }
+
+    #showAllButton,
+    #importCsvButton {
+        min-height: 42px;
+    }
+
+    /* CSV import */
+    .import-text {
+        align-items: flex-start;
+        gap: 11px;
+    }
+
+    .import-icon {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+    }
+
+    .import-text h3 {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .import-text p {
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .import-controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #csvFileInput {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    #importCsvButton {
+        width: 100%;
+    }
+
+    /* Footer */
+    footer {
+        flex-direction: column;
+        gap: 8px;
+        padding-bottom: 15px;
+        line-height: 1.5;
+    }
+}
+
+/* ==========================================
+   VERY SMALL PHONES
+   ========================================== */
+
+@media (max-width: 360px) {
+
+    .main {
+        padding: 15px 9px;
+    }
+
+    .sidebar {
+        padding: 11px 9px;
+    }
+
+    .sidebar .nav-link {
+        padding: 8px;
+        gap: 5px;
+        font-size: 11px;
+    }
+
+    .market-banner {
+        padding: 17px 12px;
+    }
+
+    .bars {
+        gap: 3px;
+    }
+
+    .bars i {
+        width: 4px;
+    }
+
+    .metric {
+        padding: 11px 9px;
+    }
+
+    .metric-top {
+        font-size: 10px;
+    }
+
+    .metric h3 {
+        font-size: 16px;
+    }
+
+    .panel {
+        padding: 13px 10px;
+    }
+
+    .strategy-card {
+        padding: 14px 11px;
+    }
+
+    .stats {
+        gap: 5px;
+    }
+
+    .stats strong {
+        font-size: 11px;
+    }
+}
+
+/* ==========================================
+   TOUCHSCREEN AND ACCESSIBILITY
+   ========================================== */
+
+@media (hover: none) {
+    .metric:hover,
+    .strategy-card:hover,
+    #runButton:hover {
+        transform: none;
+    }
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--blue-light);
+    outline-offset: 3px;
+}
