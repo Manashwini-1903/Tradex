@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends g++
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copy the project files
+# Copy project files
 
 COPY . .
 
