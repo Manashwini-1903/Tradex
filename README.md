@@ -1,69 +1,67 @@
-# TradeX
+# TradeX — Market Making Simulator
 
-### Market Making Simulator
+TradeX is an educational market-making simulator built using **C++17, Node.js, and JavaScript**. It simulates market activity and compares two market-making strategies through an interactive web dashboard.
 
-TradeX is a simple project that helps people understand how market making works.
-
-It lets users simulate a market, try two different trading strategies, and compare their results using charts and performance summaries.
-
-**No real money or real trades are involved.**
+**Live Demo:** https://tradex-ihs1.onrender.com
+**GitHub Repository:** https://github.com/Manashwini-1903/Tradex
 
 ## Features
 
-* **Run Simulations:** Choose your settings and simulate market activity.
-* **Compare Strategies:** See how Fixed Spread and Inventory Aware strategies perform.
-* **View Charts:** Compare the profit and loss (P&L) of both strategies.
-* **Explore Trade History:** View past simulation results and filter them by strategy or trade action.
-* **Download Results:** Export simulation data as a CSV file for further analysis.
+* Simulates market activity and order execution.
+* Compares Fixed Spread and Inventory-Aware strategies.
+* Displays market prices, bid-ask spreads, inventory, and profit/loss.
+* Visualizes market price movements using interactive charts.
+* Provides trade history and CSV export for analyzing results.
+* Offers a web-based interface for running simulations.
 
-## Built With
+## Tech Stack
 
-* C++ — Runs the market simulation.
-* HTML and CSS — Build the website's layout and design.
-* JavaScript — Makes the website interactive.
-* Node.js and Express — Connect the website to the C++ simulator.
-* Chart.js — Displays charts.
+* **C++17** — Market simulation and trading strategies
+* **Node.js & Express** — Backend API
+* **HTML, CSS & JavaScript** — Frontend
+* **Chart.js** — Data visualization
+* **Docker & Render** — Deployment
 
-## How to Run
+## Run Locally
 
-To run TradeX on your computer, you need **C++ (GCC), Node.js, and npm** installed.
+### Prerequisites
 
-**1. Download the project**
+* Node.js and npm
+* A C++ compiler supporting C++17
 
-Download the repository from GitHub and extract it, or clone it using Git.
+### Steps
 
-**2. Open the project folder**
+1. Clone the repository:
 
-Open the main TradeX folder in VS Code.
+   ```bash
+   git clone https://github.com/Manashwini-1903/Tradex.git
+   cd Tradex
+   ```
 
-**3. Install the required packages**
+2. Install dependencies:
 
-Open the terminal in the main project folder and run:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+3. Start the application:
 
-**4. Compile the C++ program**
+   ```bash
+   npm start
+   ```
 
-Run this command in the same terminal:
+4. Open `http://localhost:3000` in your browser.
 
-```bash
-g++ -std=c++17 -Iinclude src/main.cpp src/MarketSimulator.cpp src/MarketMaker.cpp src/Strategy.cpp src/Results.cpp src/CSVExporter.cpp -o TradeX.exe
-```
+The application compiles and runs the C++ simulator through its backend, so a compatible C++ compiler must be installed.
 
-**5. Start the website**
+## Strategies
 
-Run:
+**Fixed Spread:** Uses a fixed bid-ask spread around the market price.
 
-```bash
-node server.js
-```
+**Inventory-Aware:** Adjusts quoted prices based on current inventory to manage inventory exposure.
 
-**6. Open TradeX**
+## Purpose
 
-Visit this address in your browser:
+This project explores market-making concepts, trading strategies, inventory management, and the integration of C++ with a web-based application.
 
-`http://localhost:3000`
-
-Keep the terminal running while using the websi
+*TradeX is an educational simulator. It does not execute real trades or provide financial advice.*
