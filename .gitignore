@@ -2,10 +2,33 @@
 
 node_modules/
 
-# Compiled C++ executable
+# Compiled C++ executables
 
 TradeX.exe
+TradeX
+tradesim
 
 # Generated simulation results
 
 data/results.csv
+
+# Environment variables and secrets
+
+.env
+.env.*
+!.env.example
+
+# Log files
+
+*.log
+npm-debug.log*
+
+# Operating system files
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor settings
+
+.vscode/
