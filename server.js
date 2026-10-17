@@ -6,7 +6,10 @@ const { spawn } = require("child_process");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const executable = path.join(__dirname, "TradeX.exe");
+const executable = path.join(
+    __dirname,
+    process.platform === "win32" ? "TradeX.exe" : "TradeX"
+);
 const dataDirectory = path.join(__dirname, "data");
 const csvPath = path.join(dataDirectory, "results.csv");
 
@@ -56,11 +59,11 @@ if (simulationRunning) {
 }
 
 if (!fs.existsSync(executable)) {
-    return res.status(500).json({
-        error:
-            "TradeX.exe was not found. Compile the C++ project first."
-    });
+return res.status(500).json({
+error: "TradeX executable was not found. Compile the C++ project first."
+});
 }
+
 
 try {
     fs.mkdirSync(dataDirectory, { recursive: true });
@@ -292,7 +295,8 @@ next(error);
 });
 
 // Start the server.
-app.listen(PORT, () => {
-console.log(`TradeX server running at http://localhost:${PORT}`);
-console.log("Open this address in your browser.");
+app.listen(PORT, "0.0.0.0", () => {
+console.log(`TradeX server running on port ${PORT}`);
+console.log(`Open http://localhost:${PORT} in your browser.`);
 });
+
