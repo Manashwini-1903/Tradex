@@ -2,21 +2,26 @@
 #define MARKET_SIMULATOR_H
 
 #include <vector>
+#include <random>
 
 struct MarketEvent {
-    int step;
-    double price;
-    int orderType;
+int step;
+double price;
+int orderType;
 };
 
 class MarketSimulator {
 private:
-    double startingPrice;
+double startingPrice;
+std::mt19937 generator;
 
 public:
-    MarketSimulator(double price);
+MarketSimulator(double price, unsigned int seed);
 
-    std::vector<MarketEvent> generateEvents(int steps);
+
+std::vector<MarketEvent> generateEvents(int steps);
+
+
 };
 
 #endif

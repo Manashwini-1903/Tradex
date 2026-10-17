@@ -1,7 +1,5 @@
 
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
 #include <vector>
 #include <limits>
 
@@ -11,7 +9,6 @@
 #include "../include/CSVExporter.h"
 
 int main() {
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     int steps;
     int maxInventory;
@@ -44,7 +41,16 @@ int main() {
         return 1;
     }
 
-    MarketSimulator simulator(100.0);
+    unsigned int seed;
+
+std::cout << "Enter random seed: ";
+
+if (!(std::cin >> seed)) {
+    std::cout << "Invalid seed. Enter a whole number.\n";
+    return 1;
+}
+
+MarketSimulator simulator(100.0, seed);
 
     std::vector<MarketEvent> events =
         simulator.generateEvents(steps);

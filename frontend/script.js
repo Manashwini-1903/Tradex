@@ -60,9 +60,7 @@ if (type) {
 
 }
 
-function randomBetween(min, max) {
-return Math.random() * (max - min) + min;
-}
+
 
 /* =========================
 CHART
@@ -305,12 +303,11 @@ TRADE HISTORY
 ========================= */
 
 function renderHistory() {
-
-   
 const body = getElement("historyBody");
 const count = getElement("historyCount");
 const message = getElement("historyMessage");
 const showButton = getElement("showAllButton");
+
 
 const total = historyRecords.length;
 
@@ -318,803 +315,326 @@ count.textContent =
     total + (total === 1 ? " record" : " records");
 
 if (total === 0) {
-
-    body.innerHTML =
-        '<tr>' +
-        '<td colspan="6" class="empty">' +
-        'No simulation results available.' +
-        '</td>' +
-        '</tr>';
+    body.innerHTML = `
+        <tr>
+            <td colspan="9" class="empty">
+                No simulation results available.
+            </td>
+        </tr>
+    `;
 
     message.textContent =
         "Run a simulation to view its history.";
 
     showButton.hidden = true;
-
     return;
 }
 
-let visibleRecords;
-
-if (showAllHistory) {
-    visibleRecords = historyRecords;
-} else {
-    visibleRecords = historyRecords.slice(-10);
-}
+const visibleRecords = showAllHistory
+    ? historyRecords
+    : historyRecords.slice(-10);
 
 body.innerHTML = visibleRecords.map(function(row) {
-
-    return (
-        "<tr>" +
-        "<td>" + row.step + "</td>" +
-        "<td>" + formatMoney(row.price) + "</td>" +
-        "<td>" + row.event + "</td>" +
-        "<td>" + formatMoney(row.bid) + "</td>" +
-        "<td>" + formatMoney(row.ask) + "</td>" +
-        "<td>" + row.inventory + "</td>" +
-        "</tr>"
-    );
-
+    return `
+        <tr>
+            <td>${row.step}</td>
+            <td>${row.strategy}</td>
+            <td>${formatMoney(row.price)}</td>
+            <td>${row.event}</td>
+            <td>${row.executionPrice > 0
+                ? formatMoney(row.executionPrice)
+                : "—"}</td>
+            <td>${formatMoney(row.bid)}</td>
+            <td>${formatMoney(row.ask)}</td>
+            <td>${row.inventory}</td>
+            <td>${formatMoney(row.pnl)}</td>
+        </tr>
+    `;
 }).join("");
 
 if (total > 10 && !showAllHistory) {
-
     message.textContent =
         "Showing the latest 10 of " + total + " records.";
 
     showButton.textContent = "Show All";
     showButton.hidden = false;
-
 } else if (total > 10 && showAllHistory) {
-
     message.textContent =
         "Showing all " + total + " records.";
 
     showButton.textContent = "Show Latest 10";
     showButton.hidden = false;
-
 } else {
-
     message.textContent =
         "Showing " + total + " simulation records.";
 
     showButton.hidden = true;
 }
-   
+
 
 }
+
+
+
 
 /* =========================
-BROWSER SIMULATION
+RUN C++ SIMULATION
 ========================= */
 
-function runBrowserSimulation(steps, maxInventory, spread) {
-
-   
-let marketPrice = INITIAL_PRICE;
-
-const prices = [INITIAL_PRICE];
-const records = [];
-
-const fixed = {
-    cash: INITIAL_CASH,
-    inventory: 0,
-    trades: 0
-};
-
-const smart = {
-    cash: INITIAL_CASH,
-    inventory: 0,
-    trades: 0
-};
-
-
-for (let step = 1; step <= steps; step++) {
-
-    /* Market price movement */
-
-    marketPrice += randomBetween(-1.5, 1.5);
-
-    if (marketPrice < 1) {
-        marketPrice = 1;
-    }
-
-    marketPrice =
-        Number(marketPrice.toFixed(2));
-
-    prices.push(marketPrice);
-
-
-    /* Random order event */
-
-    const eventNumber =
-        Math.floor(Math.random() * 3);
-
-    let event = "No Trade";
-
-    if (eventNumber === 1) {
-        event = "Buy";
-    }
-
-    if (eventNumber === 2) {
-        event = "Sell";
-    }
-
-
-    /* Fixed Spread */
-
-    const fixedBid =
-        marketPrice - spread / 2;
-
-    const fixedAsk =
-        marketPrice + spread / 2;
-
-
-    /* Inventory Aware */
-
-    const inventoryShift =
-        (smart.inventory / maxInventory) *
-        (spread / 2);
-
-    const smartBid =
-        marketPrice -
-        spread / 2 -
-        inventoryShift;
-
-    const smartAsk =
-        marketPrice +
-        spread / 2 -
-        inventoryShift;
-
-
-    /* Execute event */
-
-    if (event === "Buy") {
-
-        if (fixed.inventory < maxInventory) {
-
-            fixed.inventory++;
-            fixed.cash -= fixedAsk;
-            fixed.trades++;
-
-        }
-
-        if (smart.inventory < maxInventory) {
-
-            smart.inventory++;
-            smart.cash -= smartAsk;
-            smart.trades++;
-
-        }
-
-    }
-
-
-    if (event === "Sell") {
-
-        if (fixed.inventory > -maxInventory) {
-
-            fixed.inventory--;
-            fixed.cash += fixedBid;
-            fixed.trades++;
-
-        }
-
-        if (smart.inventory > -maxInventory) {
-
-            smart.inventory--;
-            smart.cash += smartBid;
-            smart.trades++;
-
-        }
-
-    }
-
-
-    records.push({
-
-        step: step,
-        price: marketPrice,
-        event: event,
-        bid: Number(fixedBid.toFixed(2)),
-        ask: Number(fixedAsk.toFixed(2)),
-        inventory: fixed.inventory
-
-    });
-
-}
-
-
-/* Mark-to-market P/L */
-
-fixed.pnl =
-    fixed.cash +
-    fixed.inventory * marketPrice -
-    INITIAL_CASH;
-
-smart.pnl =
-    smart.cash +
-    smart.inventory * marketPrice -
-    INITIAL_CASH;
-
-
-return {
-
-    prices: prices,
-    records: records,
-    finalPrice: marketPrice,
-
-    fixed: {
-        cash: fixed.cash,
-        inventory: fixed.inventory,
-        trades: fixed.trades,
-        pnl: fixed.pnl
-    },
-
-    smart: {
-        cash: smart.cash,
-        inventory: smart.inventory,
-        trades: smart.trades,
-        pnl: smart.pnl
-    }
-
-};
-   
-
-}
-
-/* =========================
-RUN SIMULATION
-========================= */
-
-function handleSimulation(event) {
-
-   
-event.preventDefault();
-
-const steps =
-    Number(getElement("steps").value);
-
-const maxInventory =
-    Number(getElement("maxInventory").value);
-
-const spread =
-    Number(getElement("spread").value);
-
-
+async function handleSimulation(event) {
+
+    event.preventDefault();
+
+    const steps = Number(getElement("steps").value);
+    const maxInventory = Number(getElement("maxInventory").value);
+    const spread = Number(getElement("spread").value);
+    const seed = Number(document.getElementById("seed").value);
+    // Validate random seed
 if (
-    !Number.isInteger(steps) ||
-    steps < 1 ||
-    steps > 10000
+    !Number.isInteger(seed) ||
+    seed < 0 ||
+    seed > 4294967295
 ) {
-
     setStatus(
         "formStatus",
-        "Simulation steps must be between 1 and 10,000.",
+        "Random seed must be a whole number between 0 and 4294967295.",
         "error"
     );
-
     return;
 }
 
-
-if (
-    !Number.isInteger(maxInventory) ||
-    maxInventory < 1 ||
-    maxInventory > 10000
-) {
-
-    setStatus(
-        "formStatus",
-        "Maximum inventory must be between 1 and 10,000.",
-        "error"
-    );
-
-    return;
-}
-
-
-if (
-    !Number.isFinite(spread) ||
-    spread < 0.01 ||
-    spread > 100000
-) {
-
-    setStatus(
-        "formStatus",
-        "Spread must be between 0.01 and 100,000.",
-        "error"
-    );
-
-    return;
-}
-
-
-const button = getElement("runButton");
-
-button.disabled = true;
-button.textContent = "⏳ Running...";
-
-
-try {
-
-    const result =
-        runBrowserSimulation(
-            steps,
-            maxInventory,
-            spread
-        );
-
-
-    updateChart(result.prices);
-
-
-    updateMarketMetrics(
-        result.finalPrice,
-        spread,
-        steps
-    );
-
-
-    updateStrategyCard(
-        "fixed",
-        result.fixed
-    );
-
-
-    updateStrategyCard(
-        "smart",
-        result.smart
-    );
-
-
-    historyRecords =
-        result.records;
-
-    showAllHistory = false;
-
-    renderHistory();
-
-
-    setStatus(
-        "formStatus",
-        "Simulation completed successfully.",
-        "success"
-    );
-
-
-} catch (error) {
-
-    console.error(error);
-
-    setStatus(
-        "formStatus",
-        "Simulation failed. Check the browser console.",
-        "error"
-    );
-
-} finally {
-
-    button.disabled = false;
-    button.textContent = "▶ Run Simulation";
-
-}
-   
-
-}
-
-/* =========================
-CSV PARSER
-========================= */
-
-function parseCSVLine(line) {
-
-   
-const values = [];
-let current = "";
-let quotes = false;
-
-
-for (let i = 0; i < line.length; i++) {
-
-    const char = line[i];
-
-
-    if (char === '"') {
-
-        if (
-            quotes &&
-            line[i + 1] === '"'
-        ) {
-
-            current += '"';
-            i++;
-
-        } else {
-
-            quotes = !quotes;
-
-        }
-
-    } else if (
-        char === "," &&
-        !quotes
-    ) {
-
-        values.push(current.trim());
-        current = "";
-
-    } else {
-
-        current += char;
-
-    }
-}
-
-
-values.push(current.trim());
-
-return values;
-   
-
-}
-
-/* =========================
-CSV PARSING
-========================= */
-
-function parseCSV(csvText) {
-
-   
-const lines =
-    csvText
-        .replace(/^\uFEFF/, "")
-        .split(/\r?\n/)
-        .filter(function(line) {
-            return line.trim() !== "";
-        });
-
-
-if (lines.length < 2) {
-    throw new Error("CSV file contains no data.");
-}
-
-
-const headers =
-    parseCSVLine(lines[0]).map(function(header) {
-
-        return header
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, "");
-
-    });
-
-
-const required = [
-    "step",
-    "strategy",
-    "marketprice",
-    "bidprice",
-    "askprice",
-    "inventory",
-    "cash",
-    "profitloss",
-    "trades"
-];
-
-
-for (const header of required) {
-
-    if (!headers.includes(header)) {
-
-        throw new Error(
-            "Missing CSV column: " + header
-        );
-
-    }
-
-}
-
-
-const index = {};
-
-headers.forEach(function(header, i) {
-    index[header] = i;
-});
-
-
-const records = [];
-
-
-for (let i = 1; i < lines.length; i++) {
-
-    const values =
-        parseCSVLine(lines[i]);
-
-
-    const record = {
-
-        step: Number(values[index.step]),
-
-        strategy:
-            values[index.strategy],
-
-        price:
-            Number(values[index.marketprice]),
-
-        bid:
-            Number(values[index.bidprice]),
-
-        ask:
-            Number(values[index.askprice]),
-
-        inventory:
-            Number(values[index.inventory]),
-
-        cash:
-            Number(values[index.cash]),
-
-        pnl:
-            Number(values[index.profitloss]),
-
-        trades:
-            Number(values[index.trades])
-
-    };
-
-
+    // Validate simulation steps
     if (
-        !Number.isFinite(record.step) ||
-        !Number.isFinite(record.price) ||
-        !Number.isFinite(record.bid) ||
-        !Number.isFinite(record.ask) ||
-        !Number.isFinite(record.inventory) ||
-        !Number.isFinite(record.cash) ||
-        !Number.isFinite(record.pnl) ||
-        !Number.isFinite(record.trades)
+        !Number.isInteger(steps) ||
+        steps < 1 ||
+        steps > 10000
     ) {
-
-        throw new Error(
-            "Invalid numeric data on CSV row " +
-            (i + 1)
+        setStatus(
+            "formStatus",
+            "Simulation steps must be between 1 and 10,000.",
+            "error"
         );
-
+        return;
     }
 
+    // Validate maximum inventory
+    if (
+        !Number.isInteger(maxInventory) ||
+        maxInventory < 1 ||
+        maxInventory > 10000
+    ) {
+        setStatus(
+            "formStatus",
+            "Maximum inventory must be between 1 and 10,000.",
+            "error"
+        );
+        return;
+    }
 
-    records.push(record);
-}
+    // Validate spread
+    if (
+        !Number.isFinite(spread) ||
+        spread < 0.01 ||
+        spread > 100
+    ) {
+        setStatus(
+            "formStatus",
+            "Spread must be between 0.01 and 100.",
+            "error"
+        );
+        return;
+    }
 
+    const button = getElement("runButton");
 
-if (records.length === 0) {
-    throw new Error("No valid CSV rows found.");
-}
-
-
-return records;
-   
-
-}
-
-/* =========================
-IMPORT CSV
-========================= */
-
-function importCSV() {
-
-   
-const input = getElement("csvFileInput");
-
-const file = input.files[0];
-
-
-if (!file) {
+    button.disabled = true;
+    button.textContent = "⏳ Running C++ Simulator...";
 
     setStatus(
-        "csvImportStatus",
-        "Please select a CSV file first.",
-        "error"
+        "formStatus",
+        "Connecting to the C++ simulator...",
+        ""
     );
-
-    return;
-}
-
-
-const reader = new FileReader();
-
-
-setStatus(
-    "csvImportStatus",
-    "Reading CSV file..."
-);
-
-
-reader.onload = function() {
 
     try {
 
-        const records =
-            parseCSV(reader.result);
+        // Send the user's settings to the Node.js backend.
+        const response = await fetch("/api/simulate", {
 
+            method: "POST",
 
-        const fixedRows =
-            records.filter(function(row) {
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-                return row.strategy
-                    .toLowerCase()
-                    .includes("fixed");
+            body: JSON.stringify({
+                steps: steps,
+                maxInventory: maxInventory,
+                spread: spread,
+                seed: seed
+            })
 
-            });
+        });
 
+        // Convert the backend response into a JavaScript object.
+        const data = await response.json();
 
-        const smartRows =
-            records.filter(function(row) {
-
-                return row.strategy
-                    .toLowerCase()
-                    .includes("inventory");
-
-            });
-
-
-        if (
-            fixedRows.length === 0 &&
-            smartRows.length === 0
-        ) {
-
+        // Handle errors returned by the backend.
+        if (!response.ok) {
             throw new Error(
-                "Could not identify the strategies in this CSV."
+                data.details
+                    ? data.error + " " + data.details
+                    : data.error || "Simulation failed."
             );
-
         }
 
+        // Confirm that both C++ strategies returned results.
+        if (
+            !data.fixedResults ||
+            !data.smartResults ||
+            data.fixedResults.length === 0 ||
+            data.smartResults.length === 0
+        ) {
+            throw new Error(
+                "The C++ simulator did not return both strategies."
+            );
+        }
 
-        const displayRows =
-            fixedRows.length > 0
-                ? fixedRows
-                : smartRows;
+        const fixedResults = data.fixedResults;
+        const smartResults = data.smartResults;
 
+        // Get the final result for each strategy.
+        const fixedLast =
+            fixedResults[fixedResults.length - 1];
 
-        historyRecords =
-            displayRows.map(function(row, index) {
+        const smartLast =
+            smartResults[smartResults.length - 1];
 
-                let event = "Recorded";
+        // Update the Fixed Spread strategy card.
+        updateStrategyCard("fixed", {
+            pnl: fixedLast.profitLoss,
+            trades: fixedLast.trades,
+            inventory: fixedLast.inventory,
+            cash: fixedLast.cash
+        });
 
-                if (index > 0) {
+        // Update the Inventory-Aware strategy card.
+        updateStrategyCard("smart", {
+            pnl: smartLast.profitLoss,
+            trades: smartLast.trades,
+            inventory: smartLast.inventory,
+            cash: smartLast.cash
+        });
 
-                    const previous =
-                        displayRows[index - 1].inventory;
+        // Update the price chart using actual C++ results.
+        const prices = fixedResults.map(function(row) {
+            return row.marketPrice;
+        });
 
+        updateChart(prices);
 
-                    if (row.inventory > previous) {
-                        event = "Buy";
-                    } else if (row.inventory < previous) {
-                        event = "Sell";
-                    }
+        // Update the market metrics using the final C++ result.
+        getElement("bannerPrice").textContent =
+            formatMoney(fixedLast.marketPrice);
 
-                }
+        getElement("marketPrice").textContent =
+            formatMoney(fixedLast.marketPrice);
 
+        getElement("bidPrice").textContent =
+            formatMoney(fixedLast.bidPrice);
 
-                return {
+        getElement("askPrice").textContent =
+            formatMoney(fixedLast.askPrice);
 
-                    step: row.step,
-                    price: row.price,
-                    event: event,
-                    bid: row.bid,
-                    ask: row.ask,
-                    inventory: row.inventory
+        getElement("spreadValue").textContent =
+            formatMoney(
+                fixedLast.askPrice - fixedLast.bidPrice
+            );
 
-                };
+        getElement("chartLatestPrice").textContent =
+            formatMoney(fixedLast.marketPrice);
 
-            });
+        getElement("chartStepCount").textContent =
+            formatNumber(fixedLast.step);
 
+        // Combine results from both strategies.
+historyRecords = [];
 
-        showAllHistory = false;
+fixedResults.forEach(function(row) {
+    historyRecords.push({
+        step: row.step,
+        strategy: "Fixed Spread",
+        price: row.marketPrice,
+        event: row.tradeAction,
+        executionPrice: row.executionPrice,
+        bid: row.bidPrice,
+        ask: row.askPrice,
+        inventory: row.inventory,
+        pnl: row.profitLoss
+    });
+});
+
+smartResults.forEach(function(row) {
+    historyRecords.push({
+        step: row.step,
+        strategy: "Inventory Aware",
+        price: row.marketPrice,
+        event: row.tradeAction,
+        executionPrice: row.executionPrice,
+        bid: row.bidPrice,
+        ask: row.askPrice,
+        inventory: row.inventory,
+        pnl: row.profitLoss
+    });
+});
+
+// Display records in simulation-step order.
+historyRecords.sort(function(a, b) {
+    if (a.step !== b.step) {
+        return a.step - b.step;
+    }
+
+    if (a.strategy === b.strategy) {
+        return 0;
+    }
+
+    return a.strategy === "Fixed Spread" ? -1 : 1;
+});
+
+showAllHistory = false;
+
+renderHistory();
 
         renderHistory();
 
-
-        updateChart(
-            displayRows.map(function(row) {
-                return row.price;
-            })
-        );
-
-
-        const last =
-            displayRows[displayRows.length - 1];
-
-
-        updateMarketMetrics(
-            last.price,
-            last.ask - last.bid,
-            last.step
-        );
-
-
-        if (fixedRows.length > 0) {
-
-            const fixedLast =
-                fixedRows[fixedRows.length - 1];
-
-            updateStrategyCard(
-                "fixed",
-                {
-                    cash: fixedLast.cash,
-                    pnl: fixedLast.pnl,
-                    trades: fixedLast.trades,
-                    inventory: fixedLast.inventory
-                }
-            );
-
-        }
-
-
-        if (smartRows.length > 0) {
-
-            const smartLast =
-                smartRows[smartRows.length - 1];
-
-            updateStrategyCard(
-                "smart",
-                {
-                    cash: smartLast.cash,
-                    pnl: smartLast.pnl,
-                    trades: smartLast.trades,
-                    inventory: smartLast.inventory
-                }
-            );
-
-        }
-
-
-        setStatus(
-            "csvImportStatus",
-            "Successfully imported " +
-            records.length +
-            " records.",
-            "success"
-        );
-
-
+        // Display success.
         setStatus(
             "formStatus",
-            "C++ CSV results loaded successfully.",
+            "C++ simulation completed successfully!",
             "success"
         );
 
+        console.log("C++ simulation results:", data);
 
     } catch (error) {
 
-        console.error(error);
+        console.error("TradeX simulation error:", error);
 
         setStatus(
-            "csvImportStatus",
-            error.message,
+            "formStatus",
+            "Simulation failed: " + error.message,
             "error"
         );
 
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "▶ Run Simulation";
+
     }
 
-};
-
-
-reader.onerror = function() {
-
-    setStatus(
-        "csvImportStatus",
-        "Could not read the selected file.",
-        "error"
-    );
-
-};
-
-
-reader.readAsText(file);
-   
-
 }
+
 
 /* =========================
 INITIALIZATION
@@ -1137,8 +657,7 @@ updateMarketMetrics(
 const form =
     getElement("simulationForm");
 
-const importButton =
-    getElement("importCsvButton");
+
 
 const showAllButton =
     getElement("showAllButton");
@@ -1150,10 +669,7 @@ form.addEventListener(
 );
 
 
-importButton.addEventListener(
-    "click",
-    importCSV
-);
+
 
 
 showAllButton.addEventListener(
@@ -1169,22 +685,27 @@ showAllButton.addEventListener(
 );
 
 
-const navLinks =
-    document.querySelectorAll(".nav-link");
+const navLinks = document.querySelectorAll(".nav-link");
 
+navLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+        event.preventDefault();
 
-navLinks.forEach(function(link) {
-
-    link.addEventListener("click", function() {
-
-        navLinks.forEach(function(item) {
+        navLinks.forEach((item) => {
             item.classList.remove("active");
         });
 
         link.classList.add("active");
 
-    });
+        const target = document.querySelector(link.getAttribute("href"));
 
+        if (target) {
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    });
 });
 
 

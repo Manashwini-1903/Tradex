@@ -17,9 +17,12 @@ bool CSVExporter::exportResults(
 
     file << std::fixed << std::setprecision(2);
 
+    // Write all 11 CSV columns.
     file << "Step,Strategy,MarketPrice,BidPrice,AskPrice,"
-         << "Inventory,Cash,ProfitLoss,Trades\n";
+         << "Inventory,Cash,ProfitLoss,Trades,"
+         << "TradeAction,ExecutionPrice\n";
 
+    // Export Fixed Spread strategy results.
     for (const TradingResult& result : fixedResults) {
         file << result.step << ","
              << "Fixed Spread" << ","
@@ -29,9 +32,12 @@ bool CSVExporter::exportResults(
              << result.inventory << ","
              << result.cash << ","
              << result.profitLoss << ","
-             << result.trades << "\n";
+             << result.trades << ","
+             << result.tradeAction << ","
+             << result.executionPrice << "\n";
     }
 
+    // Export Inventory Aware strategy results.
     for (const TradingResult& result : smartResults) {
         file << result.step << ","
              << "Inventory Aware" << ","
@@ -41,10 +47,13 @@ bool CSVExporter::exportResults(
              << result.inventory << ","
              << result.cash << ","
              << result.profitLoss << ","
-             << result.trades << "\n";
+             << result.trades << ","
+             << result.tradeAction << ","
+             << result.executionPrice << "\n";
     }
 
     file.close();
 
     return !file.fail();
 }
+

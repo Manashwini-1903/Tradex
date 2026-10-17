@@ -1,87 +1,101 @@
-
 #include "../include/MarketMaker.h"
 
-#include <algorithm>
-
 MarketMaker::MarketMaker(
-    double spreadValue,
-    int inventoryLimit,
-    bool useInventoryAware
+double spreadValue,
+int inventoryLimit,
+bool useInventoryAware
 ) {
-    spread = spreadValue;
-    maxInventory = inventoryLimit;
-    inventoryAware = useInventoryAware;
+spread = spreadValue;
+maxInventory = inventoryLimit;
+inventoryAware = useInventoryAware;
 
-    reset();
+
+reset();
+
+
 }
 
 void MarketMaker::reset() {
-    cash = 100000.0;
-    inventory = 0;
-    trades = 0;
+cash = 100000.0;
+inventory = 0;
+trades = 0;
 }
 
 TradingResult MarketMaker::processEvent(const MarketEvent& event) {
-    double midPrice = event.price;
+double midPrice = event.price;
+double inventoryAdjustment = 0.0;
 
-    // Adjust the quotes based on the current inventory.
-    double inventoryAdjustment = 0.0;
 
-    if (inventoryAware) {
-        inventoryAdjustment =
-            (static_cast<double>(inventory) / maxInventory)
-            * (spread / 2.0);
-    }
+if (inventoryAware) {
+    inventoryAdjustment =
+        (static_cast<double>(inventory) / maxInventory)
+        * (spread / 2.0);
+}
 
-    double bidPrice =
-        midPrice - spread / 2.0 - inventoryAdjustment;
+double bidPrice =
+    midPrice - spread / 2.0 - inventoryAdjustment;
 
-    double askPrice =
-        midPrice + spread / 2.0 - inventoryAdjustment;
+double askPrice =
+    midPrice + spread / 2.0 - inventoryAdjustment;
 
-    // Process the simulated incoming order.
-    if (event.orderType == 1 && inventory < maxInventory) {
-        inventory++;
-        cash -= bidPrice;
-        trades++;
-    }
-    else if (event.orderType == 2 && inventory > -maxInventory) {
-        inventory--;
-        cash += askPrice;
-        trades++;
-    }
+std::string tradeAction = "No Trade";
+double executionPrice = 0.0;
 
-    // Mark the portfolio to the current market price.
-    double profitLoss =
-        cash + inventory * midPrice - 100000.0;
+// The market maker buys one unit at the bid.
+if (event.orderType == 1 && inventory < maxInventory) {
+    inventory++;
+    cash -= bidPrice;
+    trades++;
 
-    TradingResult result;
+    tradeAction = "Buy";
+    executionPrice = bidPrice;
+}
 
-    result.step = event.step;
-    result.marketPrice = midPrice;
-    result.bidPrice = bidPrice;
-    result.askPrice = askPrice;
-    result.inventory = inventory;
-    result.cash = cash;
-    result.profitLoss = profitLoss;
-    result.trades = trades;
+// The market maker sells one unit at the ask.
+else if (event.orderType == 2 && inventory > -maxInventory) {
+    inventory--;
+    cash += askPrice;
+    trades++;
 
-    return result;
+    tradeAction = "Sell";
+    executionPrice = askPrice;
+}
+
+double profitLoss =
+    cash + inventory * midPrice - 100000.0;
+
+TradingResult result;
+
+result.step = event.step;
+result.marketPrice = midPrice;
+result.bidPrice = bidPrice;
+result.askPrice = askPrice;
+
+result.inventory = inventory;
+result.cash = cash;
+result.profitLoss = profitLoss;
+result.trades = trades;
+
+result.tradeAction = tradeAction;
+result.executionPrice = executionPrice;
+
+return result;
+
+
 }
 
 double MarketMaker::getSpread() const {
-    return spread;
+return spread;
 }
 
 int MarketMaker::getInventory() const {
-    return inventory;
+return inventory;
 }
 
 double MarketMaker::getCash() const {
-    return cash;
+return cash;
 }
 
 int MarketMaker::getTrades() const {
-    return trades;
+return trades;
 }
-

@@ -116,15 +116,32 @@ text-align: center;
 font-size: 17px;
 }
 
-.nav-link:hover,
-.nav-link.active {
-color: var(--text);
-background: #1a2943;
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 12px;
+    margin-bottom: 5px;
+    border-radius: 9px;
+    color: var(--muted);
+    background: transparent;
+    border-left: 3px solid transparent;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--text);
+    background: #152139;
 }
 
 .nav-link.active {
-box-shadow: inset 3px 0 0 var(--blue);
+    color: #ffffff;
+    background: #25385b;
+    border-left: 3px solid var(--blue);
 }
+
+
 
 .sidebar-status {
 margin-top: auto;
