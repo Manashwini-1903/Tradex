@@ -1324,11 +1324,18 @@ select:focus-visible {
 }
 
 @media (hover: none) {
-    .metric:hover,
-    .strategy-card:hover {
-        border-color: var(--border);
-    }
+.metric:hover {
+border-color: var(--border);
 }
+
+
+.strategy-card:hover {
+    border-color: rgba(109, 140, 255, 0.55);
+}
+
+
+}
+
 
 @media (prefers-reduced-motion: reduce) {
     *,
@@ -1338,4 +1345,50 @@ select:focus-visible {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* Match Fixed Spread and Inventory Aware colors */
+
+.strategy-card:has(.strategy-icon.fixed),
+.strategy-card:has(.strategy-icon.inventory) {
+border: 1px solid rgba(109, 140, 255, 0.55);
+}
+
+.strategy-card:has(.strategy-icon.fixed):hover,
+.strategy-card:has(.strategy-icon.inventory):hover {
+border-color: #91a7ff;
+}
+
+/* Give both strategy icons the same blue styling */
+.strategy-icon.fixed,
+.strategy-icon.inventory {
+color: var(--blue-light);
+background: rgba(109, 140, 255, 0.12);
+border: 1px solid rgba(109, 140, 255, 0.28);
+}
+/* Keep the better-performing strategy consistent with the blue theme */
+.winner-item {
+background: rgba(109, 140, 255, 0.07);
+border: 1px solid rgba(109, 140, 255, 0.35);
+}
+
+.winner-item h3 {
+color: var(--blue-light);
+}
+/* Keep all four Performance Summary cards consistent */
+
+.comparison-grid .comparison-item {
+background: rgba(109, 140, 255, 0.07);
+border: 1px solid rgba(109, 140, 255, 0.35);
+border-radius: var(--radius);
+}
+
+/* Make all four summary values the same blue */
+.comparison-grid .comparison-item h3 {
+color: var(--blue-light);
+}
+
+/* Consistent hover effect */
+.comparison-grid .comparison-item:hover {
+border-color: var(--blue-light);
 }
