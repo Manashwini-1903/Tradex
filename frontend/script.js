@@ -221,7 +221,60 @@ getElement("chartStepCount").textContent =
    
 
 }
+/* =========================
+STRATEGY COMPARISON SUMMARY
+========================= */
 
+function updateComparison(fixedResult, smartResult) {
+
+    // Get the final profit/loss of both strategies.
+    const fixedPnL = Number(fixedResult.profitLoss);
+    const smartPnL = Number(smartResult.profitLoss);
+
+    // Get the comparison elements from HTML.
+    const bestStrategy = getElement("bestStrategy");
+    const bestMessage = getElement("bestStrategyMessage");
+    const pnlDifference = getElement("pnlDifference");
+    const tradeComparison = getElement("tradeComparison");
+    const inventoryComparison = getElement("inventoryComparison");
+
+    // Calculate the absolute difference in P&L.
+    const difference = Math.abs(fixedPnL - smartPnL);
+
+    pnlDifference.textContent = formatMoney(difference);
+
+    // Compare the number of trades.
+    tradeComparison.textContent =
+        formatNumber(fixedResult.trades) +
+        " vs. " +
+        formatNumber(smartResult.trades);
+
+    // Compare the final inventory.
+    inventoryComparison.textContent =
+        formatNumber(fixedResult.inventory) +
+        " vs. " +
+        formatNumber(smartResult.inventory);
+
+    // Identify the strategy with the higher final P&L.
+    if (fixedPnL > smartPnL) {
+
+        bestStrategy.textContent = "Fixed Spread";
+        bestMessage.textContent =
+            "Higher final P&L by " + formatMoney(difference) + ".";
+
+    } else if (smartPnL > fixedPnL) {
+
+        bestStrategy.textContent = "Inventory Aware";
+        bestMessage.textContent =
+            "Higher final P&L by " + formatMoney(difference) + ".";
+
+    } else {
+
+        bestStrategy.textContent = "Tie";
+        bestMessage.textContent =
+            "Both strategies have the same final P&L.";
+    }
+}
 /* =========================
 STRATEGY CARDS
 ========================= */
@@ -525,6 +578,8 @@ if (
             inventory: smartLast.inventory,
             cash: smartLast.cash
         });
+        // Update the strategy comparison summary.
+        updateComparison(fixedLast, smartLast);
 
         // Update the price chart using actual C++ results.
         const prices = fixedResults.map(function(row) {
@@ -603,7 +658,7 @@ historyRecords.sort(function(a, b) {
 
 showAllHistory = false;
 
-renderHistory();
+
 
         renderHistory();
 
