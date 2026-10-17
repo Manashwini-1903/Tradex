@@ -4,8 +4,7 @@ WORKDIR /app
 
 # Install the C++ compiler
 
-RUN apt-get update && apt-get install -y --no-install-recommends g++ 
-&& rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends g++ && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js dependencies
 
