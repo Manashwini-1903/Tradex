@@ -433,6 +433,27 @@
     </div>
 
 </section>
+<!-- P&L COMPARISON CHART -->
+
+<div class="panel pnl-comparison-panel">
+
+
+<div class="section-header">
+    <div>
+        <p class="eyebrow">STRATEGY ANALYSIS</p>
+        <h3>P&amp;L Comparison</h3>
+        <p class="subtitle">
+            Compare how both strategies perform throughout the simulation.
+        </p>
+    </div>
+</div>
+
+<div class="chart-container">
+    <canvas id="pnlChart"></canvas>
+</div>
+
+
+</div>
 
 
 <!-- HISTORY -->
@@ -442,19 +463,54 @@
 
         <div class="section-header">
 
-            <div>
-                <p class="eyebrow">SIMULATION LOG</p>
-                <h3>Trade History</h3>
-                <p class="subtitle">
-                    Review recorded market events.
-                </p>
-            </div>
+<div>
+    <p class="eyebrow">SIMULATION LOG</p>
+    <h3>Trade History</h3>
+    <p class="subtitle">
+        Review recorded market events.
+    </p>
+</div>
 
-            <span class="record-count" id="historyCount">
-                0 records
-            </span>
+<div>
+    <button type="button" id="downloadCsvButton" class="secondary-button">
+        ↓ Download CSV
+    </button>
 
-        </div>
+    <span class="record-count" id="historyCount">
+        0 records
+    </span>
+</div>
+
+</div>
+
+<div class="history-filters">
+
+
+<div class="filter-group">
+    <label for="strategyFilter">Strategy</label>
+    <select id="strategyFilter">
+        <option value="all">All Strategies</option>
+        <option value="Fixed Spread">Fixed Spread</option>
+        <option value="Inventory Aware">Inventory Aware</option>
+    </select>
+</div>
+
+<div class="filter-group">
+    <label for="actionFilter">Action</label>
+    <select id="actionFilter">
+        <option value="all">All Actions</option>
+        <option value="Buy">Buy</option>
+        <option value="Sell">Sell</option>
+        <option value="No Trade">No Trade</option>
+    </select>
+</div>
+
+<button type="button" id="resetFiltersButton" class="secondary-button">
+    Reset Filters
+</button>
+
+
+</div>
 
         <div class="table-container">
 

@@ -1,0 +1,11 @@
+# Node.js dependencies
+
+node_modules/
+
+# Compiled C++ executable
+
+TradeX.exe
+
+# Generated simulation results
+
+data/results.csv

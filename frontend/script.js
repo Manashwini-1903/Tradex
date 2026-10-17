@@ -1,6 +1,7 @@
 const INITIAL_CASH = 100000;
 const INITIAL_PRICE = 100;
 
+let pnlChart = null;
 let priceChart = null;
 let historyRecords = [];
 let showAllHistory = false;
@@ -350,44 +351,208 @@ priceChart.update();
    
 
 }
+/* =========================
+P&L COMPARISON CHART
+========================= */
+
+function createPnLChart() {
+const canvas = getElement("pnlChart");
+
+
+if (!canvas || typeof Chart === "undefined") {
+    return;
+}
+
+if (pnlChart) {
+    pnlChart.destroy();
+}
+
+pnlChart = new Chart(canvas, {
+    type: "line",
+
+    data: {
+        labels: [],
+
+        datasets: [
+            {
+                label: "Fixed Spread",
+                data: [],
+                borderColor: "#829dff",
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.2
+            },
+            {
+                label: "Inventory Aware",
+                data: [],
+                borderColor: "#34d399",
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.2
+            }
+        ]
+    },
+
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        interaction: {
+            intersect: false,
+            mode: "index"
+        },
+
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    color: "#8d9bb5"
+                }
+            },
+
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ": " +
+                            formatMoney(context.parsed.y);
+                    }
+                }
+            }
+        },
+
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Simulation Step",
+                    color: "#8d9bb5"
+                },
+
+                ticks: {
+                    color: "#8d9bb5",
+                    maxTicksLimit: 10
+                },
+
+                grid: {
+                    color: "rgba(141, 155, 181, 0.08)"
+                }
+            },
+
+            y: {
+                title: {
+                    display: true,
+                    text: "Profit / Loss (₹)",
+                    color: "#8d9bb5"
+                },
+
+                ticks: {
+                    color: "#8d9bb5"
+                },
+
+                grid: {
+                    color: "rgba(141, 155, 181, 0.08)"
+                }
+            }
+        }
+    }
+});
+
+
+}
+
+function updatePnLChart(fixedResults, smartResults) {
+if (!pnlChart) {
+createPnLChart();
+}
+
+
+if (!pnlChart) {
+    return;
+}
+
+pnlChart.data.labels = fixedResults.map(function(row) {
+    return row.step;
+});
+
+pnlChart.data.datasets[0].data =
+    fixedResults.map(function(row) {
+        return Number(row.profitLoss);
+    });
+
+pnlChart.data.datasets[1].data =
+    smartResults.map(function(row) {
+        return Number(row.profitLoss);
+    });
+
+pnlChart.update();
+
+
+}
+
 
 /* =========================
 TRADE HISTORY
 ========================= */
 
 function renderHistory() {
+
+
 const body = getElement("historyBody");
 const count = getElement("historyCount");
 const message = getElement("historyMessage");
 const showButton = getElement("showAllButton");
 
+const strategyFilter =
+    getElement("strategyFilter").value;
 
-const total = historyRecords.length;
+const actionFilter =
+    getElement("actionFilter").value;
+
+// Apply filters.
+const filteredRecords = historyRecords.filter(function(row) {
+
+    const strategyMatches =
+        strategyFilter === "all" ||
+        row.strategy === strategyFilter;
+
+    const actionMatches =
+        actionFilter === "all" ||
+        row.event === actionFilter;
+
+    return strategyMatches && actionMatches;
+});
+
+const total = filteredRecords.length;
 
 count.textContent =
     total + (total === 1 ? " record" : " records");
 
 if (total === 0) {
+
     body.innerHTML = `
         <tr>
             <td colspan="9" class="empty">
-                No simulation results available.
+                No records match the selected filters.
             </td>
         </tr>
     `;
 
     message.textContent =
-        "Run a simulation to view its history.";
+        historyRecords.length === 0
+            ? "Run a simulation to view its history."
+            : "Try changing or resetting the filters.";
 
     showButton.hidden = true;
+
     return;
 }
 
 const visibleRecords = showAllHistory
-    ? historyRecords
-    : historyRecords.slice(-10);
+    ? filteredRecords
+    : filteredRecords.slice(-10);
 
 body.innerHTML = visibleRecords.map(function(row) {
+
     return `
         <tr>
             <td>${row.step}</td>
@@ -403,21 +568,27 @@ body.innerHTML = visibleRecords.map(function(row) {
             <td>${formatMoney(row.pnl)}</td>
         </tr>
     `;
+
 }).join("");
 
 if (total > 10 && !showAllHistory) {
+
     message.textContent =
-        "Showing the latest 10 of " + total + " records.";
+        "Showing the latest 10 of " + total + " filtered records.";
 
     showButton.textContent = "Show All";
     showButton.hidden = false;
+
 } else if (total > 10 && showAllHistory) {
+
     message.textContent =
-        "Showing all " + total + " records.";
+        "Showing all " + total + " filtered records.";
 
     showButton.textContent = "Show Latest 10";
     showButton.hidden = false;
+
 } else {
+
     message.textContent =
         "Showing " + total + " simulation records.";
 
@@ -426,6 +597,76 @@ if (total > 10 && !showAllHistory) {
 
 
 }
+
+function downloadCSV() {
+if (historyRecords.length === 0) {
+     setStatus(
+    "formStatus",
+    "Run a simulation before downloading results.",
+    "error"
+             );
+                  return;
+                                 }
+
+
+const headers = [
+    "Step",
+    "Strategy",
+    "MarketPrice",
+    "TradeAction",
+    "ExecutionPrice",
+    "BidPrice",
+    "AskPrice",
+    "Inventory",
+    "ProfitLoss"
+];
+
+const rows = historyRecords.map(record => [
+    record.step,
+    record.strategy,
+    record.price,
+    record.event,
+    record.executionPrice,
+    record.bid,
+    record.ask,
+    record.inventory,
+    record.pnl
+]);
+
+function escapeCSV(value) {
+    const text = String(value ?? "");
+    return '"' + text.replace(/"/g, '""') + '"';
+}
+
+const csvContent = [
+    headers.map(escapeCSV).join(","),
+    ...rows.map(row => row.map(escapeCSV).join(","))
+].join("\r\n");
+
+const blob = new Blob(
+    ["\uFEFF" + csvContent],
+    { type: "text/csv;charset=utf-8;" }
+);
+
+const url = URL.createObjectURL(blob);
+const link = document.createElement("a");
+
+link.href = url;
+link.download = "tradex_results.csv";
+
+document.body.appendChild(link);
+link.click();
+link.remove();
+
+setTimeout(function() {
+    URL.revokeObjectURL(url);
+}, 1000);
+
+setStatus("Simulation results downloaded successfully.");
+
+
+}
+
 
 
 
@@ -587,6 +828,7 @@ if (
         });
 
         updateChart(prices);
+        updatePnLChart(fixedResults, smartResults);
 
         // Update the market metrics using the final C++ result.
         getElement("bannerPrice").textContent =
@@ -699,6 +941,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
    
 createChart();
+createPnLChart();
 
 resetStrategyCards();
 
@@ -716,6 +959,12 @@ const form =
 
 const showAllButton =
     getElement("showAllButton");
+    const downloadCsvButton = getElement("downloadCsvButton");
+
+if (downloadCsvButton) {
+downloadCsvButton.addEventListener("click", downloadCSV);
+}
+
 
 
 form.addEventListener(
@@ -738,6 +987,54 @@ showAllButton.addEventListener(
 
     }
 );
+
+const strategyFilter =
+getElement("strategyFilter");
+
+const actionFilter =
+getElement("actionFilter");
+
+const resetFiltersButton =
+getElement("resetFiltersButton");
+
+if (strategyFilter) {
+strategyFilter.addEventListener(
+"change",
+function() {
+showAllHistory = false;
+renderHistory();
+}
+);
+}
+
+if (actionFilter) {
+actionFilter.addEventListener(
+"change",
+function() {
+showAllHistory = false;
+renderHistory();
+}
+);
+}
+
+if (resetFiltersButton) {
+resetFiltersButton.addEventListener(
+"click",
+function() {
+
+
+        strategyFilter.value = "all";
+        actionFilter.value = "all";
+
+        showAllHistory = false;
+
+        renderHistory();
+    }
+);
+
+
+}
+
 
 
 const navLinks = document.querySelectorAll(".nav-link");

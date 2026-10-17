@@ -661,6 +661,74 @@ font-size: 13px;
 /* =========================
 HISTORY
 ========================= */
+.history-filters {
+display: flex;
+align-items: flex-end;
+gap: 16px;
+flex-wrap: wrap;
+margin-bottom: 18px;
+padding: 16px;
+background: rgba(255, 255, 255, 0.025);
+border: 1px solid rgba(141, 155, 181, 0.10);
+border-radius: 12px;
+}
+
+.filter-group {
+display: flex;
+flex-direction: column;
+gap: 7px;
+min-width: 170px;
+}
+
+.filter-group label {
+font-size: 12px;
+font-weight: 600;
+color: #8d9bb5;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+
+.filter-group select {
+min-height: 42px;
+padding: 0 12px;
+border: 1px solid rgba(141, 155, 181, 0.16);
+border-radius: 8px;
+background: #111827;
+color: #e5e7eb;
+font-size: 14px;
+outline: none;
+}
+
+.filter-group select:focus {
+border-color: #829dff;
+}
+
+#resetFiltersButton {
+min-height: 42px;
+}
+
+@media (max-width: 600px) {
+.history-filters {
+align-items: stretch;
+flex-direction: column;
+}
+
+
+.filter-group {
+    width: 100%;
+}
+
+.filter-group select {
+    width: 100%;
+}
+
+#resetFiltersButton {
+    width: 100%;
+}
+
+
+}
+
 
 .record-count {
 padding: 6px 10px;
