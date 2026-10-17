@@ -1,28 +1,50 @@
-#include "CSVExporter.h"
+
+#include "../include/CSVExporter.h"
+
 #include <fstream>
+#include <iomanip>
 
-using namespace std;
-
-bool exportToCSV(StrategyResult result, string filename) {
-    ofstream file(filename);
+bool CSVExporter::exportResults(
+    const std::string& filename,
+    const std::vector<TradingResult>& fixedResults,
+    const std::vector<TradingResult>& smartResults
+) {
+    std::ofstream file(filename);
 
     if (!file.is_open()) {
         return false;
     }
 
-    file << "Step,MarketPrice,BidPrice,AskPrice,"
-            "Inventory,ProfitLoss\n";
+    file << std::fixed << std::setprecision(2);
 
-    for (int i = 0; i < result.records.size(); i++) {
-        file << result.records[i].step << ","
-             << result.records[i].marketPrice << ","
-             << result.records[i].bidPrice << ","
-             << result.records[i].askPrice << ","
-             << result.records[i].inventory << ","
-             << result.records[i].profitLoss << "\n";
+    file << "Step,Strategy,MarketPrice,BidPrice,AskPrice,"
+         << "Inventory,Cash,ProfitLoss,Trades\n";
+
+    for (const TradingResult& result : fixedResults) {
+        file << result.step << ","
+             << "Fixed Spread" << ","
+             << result.marketPrice << ","
+             << result.bidPrice << ","
+             << result.askPrice << ","
+             << result.inventory << ","
+             << result.cash << ","
+             << result.profitLoss << ","
+             << result.trades << "\n";
+    }
+
+    for (const TradingResult& result : smartResults) {
+        file << result.step << ","
+             << "Inventory Aware" << ","
+             << result.marketPrice << ","
+             << result.bidPrice << ","
+             << result.askPrice << ","
+             << result.inventory << ","
+             << result.cash << ","
+             << result.profitLoss << ","
+             << result.trades << "\n";
     }
 
     file.close();
 
-    return true;
+    return !file.fail();
 }

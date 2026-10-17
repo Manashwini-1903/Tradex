@@ -1,35 +1,53 @@
-#include "Results.h"
+
+#include "../include/Results.h"
+
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
+void Results::printSummary(
+    const std::vector<TradingResult>& results,
+    const char* strategyName
+) {
+    std::cout << "\n========================================\n";
+    std::cout << "          " << strategyName << "\n";
+    std::cout << "========================================\n";
 
-void displayResults(StrategyResult result) {
-    cout << "\nStrategy: " << result.name << endl;
+    if (results.empty()) {
+        std::cout << "No simulation results available.\n";
+        return;
+    }
 
-    cout << fixed << setprecision(2);
+    const TradingResult& finalResult = results.back();
 
-    cout << "Final Profit/Loss: "
-         << result.finalProfitLoss << endl;
+    std::cout << std::fixed << std::setprecision(2);
 
-    cout << "Final Inventory: "
-         << result.finalInventory << endl;
+    std::cout << "Final Market Price : "
+              << finalResult.marketPrice << '\n';
 
-    cout << "Total Trades: "
-         << result.trades << endl;
+    std::cout << "Final P&L          : "
+              << finalResult.profitLoss << '\n';
+
+    std::cout << "Final Inventory    : "
+              << finalResult.inventory << '\n';
+
+    std::cout << "Final Cash         : "
+              << finalResult.cash << '\n';
+
+    std::cout << "Total Trades       : "
+              << finalResult.trades << '\n';
+
+    std::cout << "Performance        : ";
+
+    if (finalResult.profitLoss > 0.0) {
+        std::cout << "PROFIT\n";
+    }
+    else if (finalResult.profitLoss < 0.0) {
+        std::cout << "LOSS\n";
+    }
+    else {
+        std::cout << "BREAK EVEN\n";
+    }
+
+    std::cout << "========================================\n";
 }
 
-void compareStrategies(StrategyResult first, StrategyResult second) {
-    cout << "\n------ Strategy Comparison ------\n";
-
-    cout << left << setw(25) << "Strategy"
-         << setw(20) << "Profit/Loss" << endl;
-
-    cout << left << setw(25) << first.name
-         << setw(20) << first.finalProfitLoss << endl;
-
-    cout << left << setw(25) << second.name
-         << setw(20) << second.finalProfitLoss << endl;
-
-    cout << "---------------------------------\n";
-}

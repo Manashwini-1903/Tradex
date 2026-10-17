@@ -1,18 +1,22 @@
-#ifndef MARKETSIMULATOR_H
-#define MARKETSIMULATOR_H
+#ifndef MARKET_SIMULATOR_H
+#define MARKET_SIMULATOR_H
 
 #include <vector>
 
-using namespace std;
-
 struct MarketEvent {
+    int step;
     double price;
     int orderType;
 };
 
 class MarketSimulator {
+private:
+    double startingPrice;
+
 public:
-    vector<MarketEvent> generateMarket(int steps);
+    MarketSimulator(double price);
+
+    std::vector<MarketEvent> generateEvents(int steps);
 };
 
 #endif

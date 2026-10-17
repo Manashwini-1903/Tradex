@@ -1,23 +1,44 @@
-#ifndef MARKETMAKER_H
-#define MARKETMAKER_H
+
+#ifndef MARKET_MAKER_H
+#define MARKET_MAKER_H
+
+#include "MarketSimulator.h"
+
+struct TradingResult {
+    int step;
+    double marketPrice;
+    double bidPrice;
+    double askPrice;
+    int inventory;
+    double cash;
+    double profitLoss;
+    int trades;
+};
 
 class MarketMaker {
 private:
-    double cash;
-    double initialCash;
-    int inventory;
+    double spread;
     int maxInventory;
+    double cash;
+    int inventory;
+    int trades;
+    bool inventoryAware;
 
 public:
-    MarketMaker(double money, int limit);
+    MarketMaker(
+        double spread,
+        int maxInventory,
+        bool inventoryAware = false
+    );
 
-    bool buyShare(double price);
-    bool sellShare(double price);
+    TradingResult processEvent(const MarketEvent& event);
 
-    double getCash();
-    int getInventory();
+    void reset();
 
-    double getProfitLoss(double marketPrice);
+    double getSpread() const;
+    int getInventory() const;
+    double getCash() const;
+    int getTrades() const;
 };
 
 #endif

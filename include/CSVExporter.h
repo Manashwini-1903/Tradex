@@ -1,9 +1,17 @@
-#ifndef CSVEXPORTER_H
-#define CSVEXPORTER_H
+#ifndef CSV_EXPORTER_H
+#define CSV_EXPORTER_H
 
-#include "Strategy.h"
+#include <vector>
 #include <string>
+#include "MarketMaker.h"
 
-bool exportToCSV(StrategyResult result, string filename);
+class CSVExporter {
+public:
+static bool exportResults(
+const std::string& filename,
+const std::vector<TradingResult>& fixedResults,
+const std::vector<TradingResult>& smartResults
+);
+};
 
 #endif

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TradeX market-making simulator">
+    <title>TradeX | Market Making Simulator</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js" defer></script>
+
+
+</head>
+
+<body>
+
+<div class="app">
+
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="brand">
+        <div class="brand-logo">T</div>
+        <div>
+            <h1>TradeX</h1>
+            <p>Market Simulator</p>
+        </div>
+    </div>
+
+    <div class="nav-title">WORKSPACE</div>
+
+    <a href="#dashboard" class="nav-link active">
+        <span>▦</span>
+        Dashboard
+    </a>
+
+    <a href="#strategies" class="nav-link">
+        <span>◈</span>
+        Strategies
+    </a>
+
+    <a href="#history" class="nav-link">
+        <span>☷</span>
+        Trade History
+    </a>
+
+    <div class="sidebar-status">
+        <div class="status-dot"></div>
+        <div>
+            <strong>Simulation Mode</strong>
+            <small>Local demo environment</small>
+        </div>
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main" id="dashboard">
+
+    <!-- HEADER -->
+    <header class="topbar">
+
+        <div>
+            <p class="eyebrow">TRADING LAB / DASHBOARD</p>
+            <h2>Market Making Dashboard</h2>
+            <p class="subtitle">
+                Configure, simulate and compare trading strategies.
+            </p>
+        </div>
+
+        <div class="ready-badge">
+            <span></span>
+            Simulation Ready
+        </div>
+
+    </header>
+
+
+    <!-- MARKET BANNER -->
+    <section class="market-banner">
+
+        <div>
+            <p class="banner-label">SIMULATED MARKET PRICE</p>
+
+            <div class="banner-price">
+                <h2 id="bannerPrice">₹100.00</h2>
+                <span>DEMO</span>
+            </div>
+
+            <p>Educational market-making environment</p>
+        </div>
+
+        <div class="bars">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+        </div>
+
+    </section>
+
+
+    <!-- METRICS -->
+    <section class="metrics">
+
+        <div class="metric">
+            <div class="metric-top">
+                <span>Market Price</span>
+                <b>₹</b>
+            </div>
+            <h3 id="marketPrice">₹100.00</h3>
+            <small>Latest simulated price</small>
+        </div>
+
+        <div class="metric">
+            <div class="metric-top">
+                <span>Bid Price</span>
+                <b>↓</b>
+            </div>
+            <h3 id="bidPrice">₹99.00</h3>
+            <small>Price to buy</small>
+        </div>
+
+        <div class="metric">
+            <div class="metric-top">
+                <span>Ask Price</span>
+                <b>↑</b>
+            </div>
+            <h3 id="askPrice">₹101.00</h3>
+            <small>Price to sell</small>
+        </div>
+
+        <div class="metric">
+            <div class="metric-top">
+                <span>Spread</span>
+                <b>↔</b>
+            </div>
+            <h3 id="spreadValue">₹2.00</h3>
+            <small>Ask − Bid</small>
+        </div>
+
+    </section>
+
+
+    <!-- CHART -->
+    <section class="panel">
+
+        <div class="section-header">
+
+            <div>
+                <p class="eyebrow">MARKET OVERVIEW</p>
+                <h3>Price Movement</h3>
+                <p class="subtitle">
+                    Observe how the simulated market price changes.
+                </p>
+            </div>
+
+            <div class="latest">
+                <small>LATEST PRICE</small>
+                <strong id="chartLatestPrice">₹100.00</strong>
+            </div>
+
+        </div>
+
+        <div class="chart-box">
+            <canvas id="priceChart"></canvas>
+        </div>
+
+        <div class="chart-footer">
+            <span>Simulation steps</span>
+            <strong id="chartStepCount">0</strong>
+        </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+    <section class="panel">
+
+        <div class="section-header">
+            <div>
+                <p class="eyebrow">CONFIGURATION</p>
+                <h3>Simulation Settings</h3>
+                <p class="subtitle">
+                    Choose the parameters for your simulation.
+                </p>
+            </div>
+        </div>
+
+        <form id="simulationForm">
+
+            <div class="settings">
+
+                <div class="field">
+                    <label for="steps">Simulation Steps</label>
+                    <input
+                        type="number"
+                        id="steps"
+                        min="1"
+                        max="10000"
+                        value="100"
+                        required
+                    >
+                    <small>Number of simulated market events</small>
+                </div>
+
+                <div class="field">
+                    <label for="maxInventory">Maximum Inventory</label>
+                    <input
+                        type="number"
+                        id="maxInventory"
+                        min="1"
+                        max="10000"
+                        value="10"
+                        required
+                    >
+                    <small>Maximum absolute inventory allowed</small>
+                </div>
+
+                <div class="field">
+                    <label for="spread">Spread (₹)</label>
+                    <input
+                        type="number"
+                        id="spread"
+                        min="0.01"
+                        max="100000"
+                        step="0.01"
+                        value="2"
+                        required
+                    >
+                    <small>Total distance between bid and ask</small>
+                </div>
+
+            </div>
+
+            <div class="form-bottom">
+
+                <button type="submit" id="runButton">
+                    ▶ Run Simulation
+                </button>
+
+                <p id="formStatus">
+                    Configure your settings and run a simulation.
+                </p>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- STRATEGIES -->
+    <section id="strategies" class="strategy-section">
+
+        <div class="section-header">
+            <div>
+                <p class="eyebrow">PERFORMANCE ANALYSIS</p>
+                <h3>Strategy Comparison</h3>
+                <p class="subtitle">
+                    Compare two market-making approaches.
+                </p>
+            </div>
+        </div>
+
+        <div class="strategy-grid">
+
+            <!-- FIXED -->
+            <article class="strategy-card">
+
+                <div class="strategy-header">
+
+                    <div class="strategy-icon fixed">F</div>
+
+                    <div>
+                        <h4>Fixed Spread</h4>
+                        <p>Constant bid-ask spread</p>
+                    </div>
+
+                    <span>STRATEGY 01</span>
+
+                </div>
+
+                <p class="description">
+                    Maintains the same spread around the market price.
+                    It does not change quotes based on inventory.
+                </p>
+
+                <div class="pnl">
+                    <small>PROFIT / LOSS</small>
+                    <h3 id="fixedPnL">₹0.00</h3>
+                </div>
+
+                <div class="stats">
+
+                    <div>
+                        <small>Trades</small>
+                        <strong id="fixedTrades">0</strong>
+                    </div>
+
+                    <div>
+                        <small>Inventory</small>
+                        <strong id="fixedInventory">0</strong>
+                    </div>
+
+                    <div>
+                        <small>Cash</small>
+                        <strong id="fixedCash">₹100,000.00</strong>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- INVENTORY AWARE -->
+            <article class="strategy-card inventory-card">
+
+                <div class="strategy-header">
+
+                    <div class="strategy-icon inventory">I</div>
+
+                    <div>
+                        <h4>Inventory Aware</h4>
+                        <p>Inventory-adjusted quotes</p>
+                    </div>
+
+                    <span>STRATEGY 02</span>
+
+                </div>
+
+                <p class="description">
+                    Adjusts quotes according to inventory to help
+                    manage accumulated positions.
+                </p>
+
+                <div class="pnl">
+                    <small>PROFIT / LOSS</small>
+                    <h3 id="smartPnL">₹0.00</h3>
+                </div>
+
+                <div class="stats">
+
+                    <div>
+                        <small>Trades</small>
+                        <strong id="smartTrades">0</strong>
+                    </div>
+
+                    <div>
+                        <small>Inventory</small>
+                        <strong id="smartInventory">0</strong>
+                    </div>
+
+                    <div>
+                        <small>Cash</small>
+                        <strong id="smartCash">₹100,000.00</strong>
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+    <section class="panel" id="history">
+
+        <div class="section-header">
+
+            <div>
+                <p class="eyebrow">SIMULATION LOG</p>
+                <h3>Trade History</h3>
+                <p class="subtitle">
+                    Review recorded market events.
+                </p>
+            </div>
+
+            <span class="record-count" id="historyCount">
+                0 records
+            </span>
+
+        </div>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Market Price</th>
+                        <th>Order Event</th>
+                        <th>Bid Price</th>
+                        <th>Ask Price</th>
+                        <th>Inventory</th>
+                    </tr>
+                </thead>
+
+                <tbody id="historyBody">
+
+                    <tr>
+                        <td colspan="6" class="empty">
+                            No simulation results available.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="history-bottom">
+
+            <p id="historyMessage">
+                Run a simulation to view its history.
+            </p>
+
+            <button
+                type="button"
+                id="showAllButton"
+                hidden
+            >
+                Show All
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- CSV IMPORT -->
+    <section class="panel import-panel">
+
+        <div class="import-text">
+
+            <div class="import-icon">⇧</div>
+
+            <div>
+                <h3>Import C++ Results</h3>
+                <p>
+                    Load the results.csv file generated by your
+                    C++ simulator to display its recorded data.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="import-controls">
+
+            <input
+                type="file"
+                id="csvFileInput"
+                accept=".csv,text/csv"
+            >
+
+            <button
+                type="button"
+                id="importCsvButton"
+            >
+                Import Results
+            </button>
+
+        </div>
+
+        <p id="csvImportStatus">
+            Select the results.csv file from your C++ project.
+        </p>
+
+    </section>
+
+
+    <footer>
+        <span>TradeX · Educational Market-Making Simulator</span>
+        <span>Browser demo · Not connected to a live exchange</span>
+    </footer>
+
+</main>
+
+
+</div>
+
+</body>
+</html>

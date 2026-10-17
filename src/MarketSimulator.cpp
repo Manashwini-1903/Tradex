@@ -1,27 +1,33 @@
-#include "MarketSimulator.h"
+#include "../include/MarketSimulator.h"
+
 #include <cstdlib>
 
-vector<MarketEvent> MarketSimulator::generateMarket(int steps) {
-    vector<MarketEvent> events;
+MarketSimulator::MarketSimulator(double price) {
+startingPrice = price;
+}
 
-    double price = 100;
+std::vector<MarketEvent> MarketSimulator::generateEvents(int steps) {
+std::vector<MarketEvent> events;
+double price = startingPrice;
 
-    for (int i = 0; i < steps; i++) {
-        int change = rand() % 5 - 2;
-        price = price + change;
+for (int i = 1; i <= steps; i++) {
+    int movement = (std::rand() % 5) - 2;
+    price += movement;
 
-        if (price < 1) {
-            price = 1;
-        }
-
-        int order = rand() % 3;
-
-        MarketEvent event;
-        event.price = price;
-        event.orderType = order;
-
-        events.push_back(event);
+    if (price < 1.0) {
+        price = 1.0;
     }
 
-    return events;
+    int orderType = std::rand() % 3;
+
+    MarketEvent event;
+    event.step = i;
+    event.price = price;
+    event.orderType = orderType;
+
+    events.push_back(event);
+}
+
+return events;
+
 }

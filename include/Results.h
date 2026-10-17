@@ -1,9 +1,15 @@
 #ifndef RESULTS_H
 #define RESULTS_H
 
-#include "Strategy.h"
+#include <vector>
+#include "MarketMaker.h"
 
-void displayResults(StrategyResult result);
-void compareStrategies(StrategyResult first, StrategyResult second);
+class Results {
+public:
+static void printSummary(
+const std::vector<TradingResult>& results,
+const char* strategyName
+);
+};
 
 #endif
